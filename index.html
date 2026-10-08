@@ -85,11 +85,11 @@
             <!-- View Switching Tabs & Actions -->
             <div class="flex items-center gap-3">
                 <nav class="flex gap-1 text-sm font-medium bg-slate-100 p-1 rounded-xl">
-                    <button id="nav-catalog" onclick="switchTab('catalog')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-white text-pink-600 shadow-sm">
+                    <button id="nav-catalog" onclick="switchTab('catalog' , event)" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-white text-pink-600 shadow-sm">
                         <i class="fa-solid fa-store text-xs"></i>
                         <span>Catálogo</span>
                     </button>
-                    <button id="nav-admin" onclick="switchTab('admin')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 hover:text-pink-600">
+                    <button id="nav-admin" onclick="switchTab('admin' , event)" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 hover:text-pink-600">
                         <i class="fa-solid fa-user-gear text-xs"></i>
                         <span>Painel Admin</span>
                     </button>
@@ -401,26 +401,36 @@
         });
 
         // Defina a senha do painel administrativo aqui
-        const ADMIN_PASSWORD = "Fr@n|81026|*"; // ⬅️ Altere "1234" para a senha que sua cunhada escolher!
+        function switchTab(tabName, evt) {
+            const ADMIN_PASSWORD = "1234"; // ⬅️ Defina a senha aqui!
         
-        function switchTab(tabName) {
             // Se tentar acessar a aba 'admin', pede a senha
             if (tabName === 'admin') {
                 const inputPassword = prompt("Digite a senha do Painel Administrativo:");
                 
-                if (inputPassword !== ADMIN_PASSWORD) {
-                    alert("Senha incorreta! Acesso negado.");
-                    return; // Bloqueia o acesso e não troca de aba
+                // Se cancelar o prompt ou errar a senha
+                if (inputPassword === null || inputPassword !== ADMIN_PASSWORD) {
+                    if (inputPassword !== null) {
+                        alert("Senha incorreta! Acesso negado.");
+                    }
+                    return; // Bloqueia e não troca de aba
                 }
             }
         
-            // Se a senha estiver correta (ou for a aba 'catalog'), troca a tela normalmente
+            // Esconde todas as abas
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
             
-            document.getElementById(`${tabName}-tab`).classList.add('active');
-            if (event && event.currentTarget) {
-                event.currentTarget.classList.add('active');
+            // Mostra a aba selecionada
+            const targetTab = document.getElementById(`${tabName}-tab`);
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
+        
+            // Ativa o botão selecionado no menu
+            const currentBtn = evt ? evt.currentTarget : (window.event ? window.event.currentTarget : null);
+            if (currentBtn) {
+                currentBtn.classList.add('active');
             }
         }
 
