@@ -402,35 +402,54 @@
 
         // Defina a senha do painel administrativo aqui
         function switchTab(tabName, evt) {
-            const ADMIN_PASSWORD = "1234"; // ⬅️ Defina a senha aqui!
+            const ADMIN_PASSWORD = "Fr@n|81026|*"; // ⬅️ Sua senha do painel aqui
         
-            // Se tentar acessar a aba 'admin', pede a senha
+            // Se for para a aba de admin, valida a senha
             if (tabName === 'admin') {
                 const inputPassword = prompt("Digite a senha do Painel Administrativo:");
                 
-                // Se cancelar o prompt ou errar a senha
-                if (inputPassword === null || inputPassword !== ADMIN_PASSWORD) {
-                    if (inputPassword !== null) {
-                        alert("Senha incorreta! Acesso negado.");
-                    }
-                    return; // Bloqueia e não troca de aba
+                if (inputPassword === null) return; // Clicou em cancelar
+                
+                if (inputPassword !== ADMIN_PASSWORD) {
+                    alert("Senha incorreta! Acesso negado.");
+                    return;
                 }
             }
         
-            // Esconde todas as abas
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-            
-            // Mostra a aba selecionada
-            const targetTab = document.getElementById(`${tabName}-tab`);
-            if (targetTab) {
-                targetTab.classList.add('active');
+            // 1. Esconde as seções de conteúdo
+            const catalogView = document.getElementById('view-catalog') || document.getElementById('catalog-tab');
+            const adminView = document.getElementById('view-admin') || document.getElementById('admin-tab');
+        
+            if (catalogView && adminView) {
+                catalogView.classList.add('hidden');
+                adminView.classList.add('hidden');
+                catalogView.classList.remove('active');
+                adminView.classList.remove('active');
+        
+                if (tabName === 'catalog') {
+                    catalogView.classList.remove('hidden');
+                    catalogView.classList.add('active');
+                } else if (tabName === 'admin') {
+                    adminView.classList.remove('hidden');
+                    adminView.classList.add('active');
+                }
             }
         
-            // Ativa o botão selecionado no menu
-            const currentBtn = evt ? evt.currentTarget : (window.event ? window.event.currentTarget : null);
-            if (currentBtn) {
-                currentBtn.classList.add('active');
+            // 2. Atualiza o visual dos botões no topo
+            const navCatalog = document.getElementById('nav-catalog');
+            const navAdmin = document.getElementById('nav-admin');
+        
+            if (navCatalog && navAdmin) {
+                // Remove destaque de ambos
+                navCatalog.className = "px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 hover:text-pink-600";
+                navAdmin.className = "px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 hover:text-pink-600";
+        
+                // Aplica o destaque branco com sombra no botão ativo
+                if (tabName === 'catalog') {
+                    navCatalog.className = "px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-white text-pink-600 shadow-sm";
+                } else {
+                    navAdmin.className = "px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-white text-pink-600 shadow-sm";
+                }
             }
         }
 
