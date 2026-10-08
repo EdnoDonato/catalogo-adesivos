@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BellaUnha - Adesivos Artesanais</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fdf2f8',
+                            100: '#fce7f3',
+                            200: '#fbcfe8',
+                            300: '#f472b6',
+                            400: '#e879f9',
+                            500: '#ec4899',
+                            600: '#db2777',
+                            700: '#be185d',
+                            800: '#9d174d',
+                        },
+                        gold: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Custom scrollbar for drawer and modals */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f472b6;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #db2777;
+        }
+        
+        .tab-active {
+            border-bottom: 2px solid #db2777;
+            color: #db2777;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col font-sans text-slate-800 antialiased bg-pink-50/20 selection:bg-pink-200">
+
+    <!-- TOP HEADER -->
+    <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md shadow-sm border-b border-pink-100">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-2">
+            <!-- Logo / Brand -->
+            <div class="flex items-center gap-2 cursor-pointer" onclick="switchTab('catalog')">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-500 to-purple-500 flex items-center justify-center text-white shadow-md shadow-pink-200">
+                    <i class="fa-solid fa-sparkles text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent leading-tight">BellaUnha</h1>
+                    <p class="text-[10px] text-slate-500 font-medium tracking-wide uppercase">Adesivos Artesanais</p>
+                </div>
+            </div>
+
+            <!-- View Switching Tabs & Actions -->
+            <div class="flex items-center gap-3">
+                <nav class="flex gap-1 text-sm font-medium bg-slate-100 p-1 rounded-xl">
+                    <button id="nav-catalog" onclick="switchTab('catalog')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-white text-pink-600 shadow-sm">
+                        <i class="fa-solid fa-store text-xs"></i>
+                        <span>Catálogo</span>
+                    </button>
+                    <button id="nav-admin" onclick="switchTab('admin')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 hover:text-pink-600">
+                        <i class="fa-solid fa-user-gear text-xs"></i>
+                        <span>Painel Admin</span>
+                    </button>
+                </nav>
+
+                <!-- Cart Button (Only visible in catalog) -->
+                <button id="btn-open-cart" onclick="toggleCartDrawer(true)" class="relative p-2.5 bg-pink-50 hover:bg-pink-100 text-pink-600 rounded-xl transition-all shadow-sm border border-pink-100">
+                    <i class="fa-solid fa-bag-shopping text-lg"></i>
+                    <span id="cart-badge" class="absolute -top-1.5 -right-1.5 bg-pink-600 text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-md scale-0 transition-transform">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- MAIN CONTENT WRAPPER -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-6">
+
+        <!-- ================= VISÃO DO CLIENTE (CATÁLOGO) ================= -->
+        <section id="view-catalog" class="space-y-6">
+            
+            <!-- Banner Informrativo / Promocional -->
+            <div class="bg-gradient-to-r from-pink-500 via-purple-500 to-pink-600 rounded-2xl p-6 text-white shadow-lg shadow-pink-200/50 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="space-y-1 text-center md:text-left">
+                    <span class="bg-white/20 text-white text-xs px-2.5 py-1 rounded-full font-semibold uppercase tracking-wider">Produção Artesanal em Goiânia</span>
+                    <h2 class="text-2xl md:text-3xl font-extrabold">Adesivos de Unha Exclusivos</h2>
+                    <p class="text-pink-100 text-sm max-full md:max-w-xl">Modelos produzidos diariamente com alta durabilidade e acabamento perfeito para manicures e revendedoras.</p>
+                </div>
+                <a href="#products-grid" class="bg-white text-pink-600 hover:bg-pink-50 font-bold px-5 py-2.5 rounded-xl text-sm transition-all shadow-md shrink-0">
+                    Ver Lançamentos
+                </a>
+            </div>
+
+            <!-- Search and Filter Bar -->
+            <div class="flex flex-col md:flex-row gap-3 items-center justify-between bg-white p-3 rounded-2xl border border-pink-100 shadow-sm">
+                <!-- Search Box -->
+                <div class="relative w-full md:w-80">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <input type="text" id="search-input" oninput="filterProducts()" placeholder="Buscar modelo ou código..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white transition-all">
+                </div>
+
+                <!-- Categories Horizontal Scroll -->
+                <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 scrollbar-none" id="category-filters">
+                    <button onclick="setCategory('todas')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all bg-pink-600 text-white shadow-sm" data-category="todas">
+                        Todas
+                    </button>
+                    <button onclick="setCategory('Florais')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all bg-slate-100 text-slate-600 hover:bg-pink-50 hover:text-pink-600" data-category="Florais">
+                        🌸 Florais
+                    </button>
+                    <button onclick="setCategory('Rendas')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all bg-slate-100 text-slate-600 hover:bg-pink-50 hover:text-pink-600" data-category="Rendas">
+                        ✨ Rendas
+                    </button>
+                    <button onclick="setCategory('Geométricos')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all bg-slate-100 text-slate-600 hover:bg-pink-50 hover:text-pink-600" data-category="Geométricos">
+                        📐 Geométricos
+                    </button>
+                    <button onclick="setCategory('Temáticos')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all bg-slate-100 text-slate-600 hover:bg-pink-50 hover:text-pink-600" data-category="Temáticos">
+                        🎉 Temáticos
+                    </button>
+                </div>
+            </div>
+
+            <!-- Products Grid Container -->
+            <div id="products-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <!-- Products dynamically inserted via Javascript -->
+            </div>
+
+            <!-- Empty State for Catalog -->
+            <div id="catalog-empty" class="hidden text-center py-12 bg-white rounded-2xl border border-dashed border-slate-200">
+                <i class="fa-solid fa-box-open text-4xl text-slate-300 mb-3"></i>
+                <h3 class="text-base font-semibold text-slate-700">Nenhum adesivo encontrado</h3>
+                <p class="text-xs text-slate-500 mt-1">Tente mudar o filtro de busca ou a categoria selecionada.</p>
+            </div>
+        </section>
+
+        <!-- ================= VISÃO ADMINISTRATIVA (PAINEL DA CUNHADA) ================= -->
+        <section id="view-admin" class="hidden space-y-6">
+            
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-pink-600"></i> Painel de Gerenciamento do Catálogo
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Cadastre novas cartelas de adesivos tirando foto diretamente pelo celular.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="exportData()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-download"></i> Exportar Dados
+                    </button>
+                    <button onclick="resetDefaultData()" class="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold rounded-xl transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate-left"></i> Restaurar Padrão
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- FORMULÁRIO DE CADASTRO (1 Coluna) -->
+                <div class="bg-white p-5 rounded-2xl border border-pink-100 shadow-sm space-y-4">
+                    <h3 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-plus-circle text-pink-600"></i> Cadastrar Novo Adesivo
+                    </h3>
+
+                    <form id="add-product-form" onsubmit="handleProductSubmit(event)" class="space-y-3">
+                        <!-- Preview da Imagem -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Foto do Adesivo</label>
+                            <div class="relative w-full h-44 bg-slate-50 border-2 border-dashed border-pink-200 rounded-xl overflow-hidden flex flex-col items-center justify-center cursor-pointer hover:bg-pink-50/50 transition-all group" onclick="document.getElementById('image-file-input').click()">
+                                <img id="image-preview" class="hidden w-full h-full object-cover">
+                                <div id="image-preview-placeholder" class="text-center p-4">
+                                    <i class="fa-solid fa-camera text-2xl text-pink-400 group-hover:scale-110 transition-transform"></i>
+                                    <p class="text-xs font-semibold text-slate-600 mt-2">Clique para Tirar Foto ou Escolher</p>
+                                    <p class="text-[10px] text-slate-400 mt-0.5">Aceita imagens do celular/Galeria</p>
+                                </div>
+                            </div>
+                            <input type="file" id="image-file-input" accept="image/*" class="hidden" onchange="handleImageSelect(event)">
+                        </div>
+
+                        <!-- Opção alternativa: URL da foto -->
+                        <div>
+                            <label class="block text-[11px] font-medium text-slate-500 mb-1">ou Cole a URL da Imagem (Opcional)</label>
+                            <input type="url" id="prod-image-url" oninput="handleUrlInput(this.value)" placeholder="https://..." class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-pink-500">
+                        </div>
+
+                        <!-- Nome do Produto -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nome do Adesivo / Modelo *</label>
+                            <input type="text" id="prod-title" required placeholder="Ex: Flor de Cerejeira com Strass" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-pink-400">
+                        </div>
+
+                        <!-- Grid para Código, Preço e Categoria -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Ref/Código *</label>
+                                <input type="text" id="prod-code" required placeholder="Ex: FL-09" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-pink-400">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Preço R$ *</label>
+                                <input type="number" id="prod-price" step="0.50" min="0" required placeholder="3.50" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-pink-400">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Categoria *</label>
+                            <select id="prod-category" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-pink-400">
+                                <option value="Florais">Florais</option>
+                                <option value="Rendas">Rendas</option>
+                                <option value="Geométricos">Geométricos</option>
+                                <option value="Temáticos">Temáticos</option>
+                            </select>
+                        </div>
+
+                        <!-- Botão de Salvar -->
+                        <button type="submit" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-2.5 rounded-xl text-xs transition-all shadow-md shadow-pink-200 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Publicar no Catálogo
+                        </button>
+                    </form>
+                </div>
+
+                <!-- TABELA DE GERENCIAMENTO DE PRODUTOS (2 Colunas) -->
+                <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <h3 class="font-bold text-sm text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-boxes-stacked text-pink-600"></i> Produtos Ativos no Catálogo (<span id="admin-product-count">0</span>)
+                        </h3>
+                    </div>
+
+                    <!-- Lista de Produtos Admin -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-200 text-slate-500 font-semibold bg-slate-50">
+                                    <th class="p-2.5 rounded-l-lg">Adesivo</th>
+                                    <th class="p-2.5">Código</th>
+                                    <th class="p-2.5">Categoria</th>
+                                    <th class="p-2.5">Preço</th>
+                                    <th class="p-2.5 text-center">Status</th>
+                                    <th class="p-2.5 text-right rounded-r-lg">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-products-table">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= GAVETA DO CARRINHO DE COMPRAS (OFFCANVAS) ================= -->
+    <div id="cart-drawer-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden transition-opacity" onclick="toggleCartDrawer(false)"></div>
+
+    <aside id="cart-drawer" class="fixed top-0 right-0 h-full w-full sm:w-96 bg-white z-50 shadow-2xl flex flex-col transition-transform transform translate-x-full duration-300">
+        <!-- Header do Carrinho -->
+        <div class="p-4 bg-pink-50 border-b border-pink-100 flex items-center justify-between">
+            <div class="flex items-center gap-2 text-pink-700 font-bold">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span>Seu Carrinho de Pedidos</span>
+            </div>
+            <button onclick="toggleCartDrawer(false)" class="w-8 h-8 rounded-full bg-white text-slate-500 hover:text-slate-800 flex items-center justify-center shadow-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Lista de Itens no Carrinho -->
+        <div id="cart-items-container" class="flex-1 overflow-y-auto p-4 space-y-3">
+            <!-- Dynamic Cart Items -->
+        </div>
+
+        <!-- Carrinho Vazio State -->
+        <div id="cart-empty-state" class="hidden flex-1 flex flex-col items-center justify-center p-6 text-center">
+            <div class="w-16 h-16 bg-pink-50 text-pink-400 rounded-full flex items-center justify-center text-2xl mb-3">
+                <i class="fa-solid fa-cart-flatbed"></i>
+            </div>
+            <h4 class="font-semibold text-slate-700 text-sm">Seu carrinho está vazio</h4>
+            <p class="text-xs text-slate-400 mt-1 max-w-xs">Navegue pelos modelos e escolha suas cartelas de adesivos para fechar o pedido.</p>
+        </div>
+
+        <!-- Footer do Carrinho (Resumo + Checkout) -->
+        <div id="cart-footer" class="p-4 border-t border-slate-100 bg-slate-50 space-y-3">
+            <!-- Subtotal -->
+            <div class="space-y-1 text-xs">
+                <div class="flex justify-between text-slate-600">
+                    <span>Quantidade de Cartelas:</span>
+                    <span id="cart-total-qty" class="font-semibold">0</span>
+                </div>
+                <div class="flex justify-between text-slate-800 text-sm font-bold pt-1 border-t border-slate-200">
+                    <span>Valor Total:</span>
+                    <span id="cart-total-price" class="text-pink-600">R$ 0,00</span>
+                </div>
+            </div>
+
+            <!-- Formulário Simplificado de Entrega -->
+            <div class="space-y-2 pt-2">
+                <p class="text-[11px] font-bold uppercase text-slate-400 tracking-wider">Dados para Envio do Pedido</p>
+                <input type="text" id="client-name" placeholder="Seu Nome Completo *" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-pink-500">
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" id="client-neighborhood" placeholder="Bairro *" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-pink-500">
+                    <input type="text" id="client-city" placeholder="Cidade (ex: Goiânia) *" value="Goiânia" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-pink-500">
+                </div>
+            </div>
+
+            <!-- Botão de Enviar Pedido via WhatsApp -->
+            <button onclick="sendWhatsAppOrder()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl text-xs transition-all shadow-md shadow-emerald-200 flex items-center justify-center gap-2">
+                <i class="fa-brands fa-whatsapp text-lg"></i>
+                <span>Enviar Pedido para o WhatsApp</span>
+            </button>
+        </div>
+    </aside>
+
+    <script>
+        /* ================= ESTADO DA APLICAÇÃO E DADOS PADRÃO ================= */
+        
+        // Número de telefone da cunhada (DDD + Número) Exemplo Goiânia (62)
+        const WHATSAPP_PHONE = "5562992712483"; // TODO: Alterar para o número real
+
+        // Produtos de exemplo pré-carregados caso a localStorage esteja vazia
+        const DEFAULT_PRODUCTS = [
+            {
+                id: "prod_1",
+                code: "FL-01",
+                title: "Floral Rosa Delicado com Folhas Douradas",
+                category: "Florais",
+                price: 3.50,
+                image: "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=400&q=80",
+                active: true
+            },
+            {
+                id: "prod_2",
+                code: "RD-02",
+                title: "Renda Branca Casamento de Luxo",
+                category: "Rendas",
+                price: 4.00,
+                image: "https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&w=400&q=80",
+                active: true
+            },
+            {
+                id: "prod_3",
+                code: "GM-03",
+                title: "Geométrico Minimalista Prata & Preto",
+                category: "Geométricos",
+                price: 3.50,
+                image: "https://images.unsplash.com/photo-1632345031435-8727f6897d53?auto=format&fit=crop&w=400&q=80",
+                active: true
+            },
+            {
+                id: "prod_4",
+                code: "TM-04",
+                title: "Borboletas Coloridas 3D com Borboleta",
+                category: "Temáticos",
+                price: 4.50,
+                image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=400&q=80",
+                active: true
+            }
+        ];
+
+        // Carregar estado local
+        let products = JSON.parse(localStorage.getItem('bella_products')) || DEFAULT_PRODUCTS;
+        let cart = JSON.parse(localStorage.getItem('bella_cart')) || [];
+        let currentCategory = 'todas';
+        let currentBase64Image = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCatalog();
+            renderCart();
+            renderAdminTable();
+        });
+
+        /* ================= AÇÕES DE NAVEGAÇÃO E TABS ================= */
+        function switchTab(tab) {
+            const catalogView = document.getElementById('view-catalog');
+            const adminView = document.getElementById('view-admin');
+            const navCatalog = document.getElementById('nav-catalog');
+            const navAdmin = document.getElementById('nav-admin');
+
+            if (tab === 'catalog') {
+                catalogView.classList.remove('hidden');
+                adminView.classList.add('hidden');
+                
+                navCatalog.className = "px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-white text-pink-600 shadow-sm font-semibold";
+                navAdmin.className = "px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 hover:text-pink-600";
+            } else {
+                catalogView.classList.add('hidden');
+                adminView.classList.remove('hidden');
+
+                navAdmin.className = "px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-white text-pink-600 shadow-sm font-semibold";
+                navCatalog.className = "px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 hover:text-pink-600";
+            }
+        }
+
+        /* ================= RENDERIZAÇÃO DO CATÁLOGO DE PRODUTOS ================= */
+        function renderCatalog() {
+            const grid = document.getElementById('products-grid');
+            const emptyState = document.getElementById('catalog-empty');
+            const searchInput = document.getElementById('search-input').value.toLowerCase().trim();
+
+            grid.innerHTML = '';
+
+            // Filtrar produtos por categoria, status ativo e busca
+            const filtered = products.filter(p => {
+                const matchesCategory = currentCategory === 'todas' || p.category === currentCategory;
+                const matchesSearch = p.title.toLowerCase().includes(searchInput) || p.code.toLowerCase().includes(searchInput);
+                return p.active && matchesCategory && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                grid.classList.add('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+                grid.classList.remove('hidden');
+            }
+
+            filtered.forEach(product => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl border border-pink-100/80 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col group";
+                
+                card.innerHTML = `
+                    <div class="relative w-full aspect-square bg-slate-100 overflow-hidden">
+                        <img src="${product.image}" alt="${product.title}" onerror="this.src='https://placehold.co/400x400/fbcfe8/db2777?text=Sem+Foto'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        <span class="absolute top-2 left-2 bg-slate-900/70 backdrop-blur-md text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
+                            Ref: ${product.code}
+                        </span>
+                        <span class="absolute top-2 right-2 bg-pink-100 text-pink-700 text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                            ${product.category}
+                        </span>
+                    </div>
+
+                    <div class="p-3 flex-1 flex flex-col justify-between space-y-2">
+                        <div>
+                            <h3 class="font-bold text-xs text-slate-800 line-clamp-2 leading-snug">${product.title}</h3>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-1 border-t border-slate-50">
+                            <div>
+                                <span class="text-[10px] text-slate-400 block -mb-1">Cartela</span>
+                                <span class="text-sm font-extrabold text-pink-600">R$ ${product.price.toFixed(2).replace('.', ',')}</span>
+                            </div>
+                            <button onclick="addToCart('${product.id}')" class="bg-pink-50 hover:bg-pink-600 text-pink-600 hover:text-white p-2 rounded-xl transition-all flex items-center justify-center shadow-sm">
+                                <i class="fa-solid fa-cart-plus text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function setCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-filter-btn').forEach(btn => {
+                if (btn.dataset.category === cat) {
+                    btn.className = "cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all bg-pink-600 text-white shadow-sm";
+                } else {
+                    btn.className = "cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all bg-slate-100 text-slate-600 hover:bg-pink-50 hover:text-pink-600";
+                }
+            });
+            renderCatalog();
+        }
+
+        function filterProducts() {
+            renderCatalog();
+        }
+
+        /* ================= GERENCIAMENTO DO CARRINHO ================= */
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const existingIndex = cart.findIndex(item => item.id === productId);
+
+            if (existingIndex > -1) {
+                cart[existingIndex].quantity += 1;
+            } else {
+                cart.push({
+                    id: product.id,
+                    code: product.code,
+                    title: product.title,
+                    price: product.price,
+                    image: product.image,
+                    quantity: 1
+                });
+            }
+
+            saveCart();
+            renderCart();
+            showToast(`Adesivo "Ref: ${product.code}" adicionado ao carrinho!`);
+        }
+
+        function updateQuantity(productId, delta) {
+            const item = cart.find(i => i.id === productId);
+            if (!item) return;
+
+            item.quantity += delta;
+
+            if (item.quantity <= 0) {
+                cart = cart.filter(i => i.id !== productId);
+            }
+
+            saveCart();
+            renderCart();
+        }
+
+        function saveCart() {
+            localStorage.setItem('bella_cart', JSON.stringify(cart));
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cart-items-container');
+            const badge = document.getElementById('cart-badge');
+            const emptyState = document.getElementById('cart-empty-state');
+            const footer = document.getElementById('cart-footer');
+            
+            const totalQty = cart.reduce((acc, i) => acc + i.quantity, 0);
+            const totalPrice = cart.reduce((acc, i) => acc + (i.price * i.quantity), 0);
+
+            // Badge
+            badge.innerText = totalQty;
+            if (totalQty > 0) {
+                badge.classList.remove('scale-0');
+            } else {
+                badge.classList.add('scale-0');
+            }
+
+            // Totais
+            document.getElementById('cart-total-qty').innerText = totalQty;
+            document.getElementById('cart-total-price').innerText = `R$ ${totalPrice.toFixed(2).replace('.', ',')}`;
+
+            if (cart.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                footer.classList.add('opacity-50', 'pointer-events-none');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+                footer.classList.remove('opacity-50', 'pointer-events-none');
+            }
+
+            container.innerHTML = '';
+            cart.forEach(item => {
+                const el = document.createElement('div');
+                el.className = "flex items-center gap-3 p-2.5 bg-slate-50 rounded-xl border border-slate-100";
+                
+                el.innerHTML = `
+                    <img src="${item.image}" class="w-12 h-12 rounded-lg object-cover bg-white">
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-xs font-bold text-slate-800 truncate">${item.title}</h4>
+                        <p class="text-[10px] text-slate-400">Ref: ${item.code} | R$ ${item.price.toFixed(2).replace('.', ',')}</p>
+                    </div>
+                    <div class="flex items-center gap-1.5 bg-white border border-slate-200 rounded-lg p-1">
+                        <button onclick="updateQuantity('${item.id}', -1)" class="w-5 h-5 flex items-center justify-center text-slate-500 hover:text-pink-600 font-bold text-xs">-</button>
+                        <span class="text-xs font-bold text-slate-800 w-4 text-center">${item.quantity}</span>
+                        <button onclick="updateQuantity('${item.id}', 1)" class="w-5 h-5 flex items-center justify-center text-slate-500 hover:text-pink-600 font-bold text-xs">+</button>
+                    </div>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        function toggleCartDrawer(open) {
+            const drawer = document.getElementById('cart-drawer');
+            const overlay = document.getElementById('cart-drawer-overlay');
+
+            if (open) {
+                overlay.classList.remove('hidden');
+                drawer.classList.remove('translate-x-full');
+            } else {
+                overlay.classList.add('hidden');
+                drawer.classList.add('translate-x-full');
+            }
+        }
+
+        /* ================= FECHAMENTO DE PEDIDO (WHATSAPP) ================= */
+        function sendWhatsAppOrder() {
+            if (cart.length === 0) return;
+
+            const name = document.getElementById('client-name').value.trim();
+            const neighborhood = document.getElementById('client-neighborhood').value.trim();
+            const city = document.getElementById('client-city').value.trim();
+
+            if (!name || !neighborhood || !city) {
+                alert('Por favor, preencha seu Nome, Bairro e Cidade para entrega.');
+                return;
+            }
+
+            let message = `🌸 *NOVO PEDIDO DE ADESIVOS DE UNHA* 🌸\n\n`;
+            message += `👤 *Cliente:* ${name}\n`;
+            message += `📍 *Entrega:* ${neighborhood} - ${city}\n`;
+            message += `------------------------------------\n\n`;
+            message += `📦 *ITENS DO PEDIDO:*\n`;
+
+            cart.forEach(item => {
+                const subtotal = item.price * item.quantity;
+                message += `• ${item.quantity}x [Ref: ${item.code}] ${item.title} - R$ ${subtotal.toFixed(2).replace('.', ',')}\n`;
+            });
+
+            const totalPrice = cart.reduce((acc, i) => acc + (i.price * i.quantity), 0);
+            const totalQty = cart.reduce((acc, i) => acc + i.quantity, 0);
+
+            message += `\n------------------------------------\n`;
+            message += `📊 *Total de Cartelas:* ${totalQty}\n`;
+            message += `💰 *VALOR TOTAL:* R$ ${totalPrice.toFixed(2).replace('.', ',')}\n\n`;
+            message += `Aguardando a confirmação da chave PIX para o pagamento!`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodedMessage}`;
+
+            window.open(whatsappUrl, '_blank');
+        }
+
+        /* ================= PAINEL ADMINISTRATIVO E UPLOAD DE IMAGEM ================= */
+        function handleImageSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentBase64Image = e.target.result;
+                showImagePreview(currentBase64Image);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleUrlInput(url) {
+            if (url.trim()) {
+                currentBase64Image = url.trim();
+                showImagePreview(currentBase64Image);
+            }
+        }
+
+        function showImagePreview(src) {
+            const img = document.getElementById('image-preview');
+            const placeholder = document.getElementById('image-preview-placeholder');
+
+            img.src = src;
+            img.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+        }
+
+        function handleProductSubmit(event) {
+            event.preventDefault();
+
+            const title = document.getElementById('prod-title').value.trim();
+            const code = document.getElementById('prod-code').value.trim().toUpperCase();
+            const price = parseFloat(document.getElementById('prod-price').value);
+            const category = document.getElementById('prod-category').value;
+
+            const imageUrl = currentBase64Image || 'https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=400&q=80';
+
+            const newProduct = {
+                id: 'prod_' + Date.now(),
+                code: code,
+                title: title,
+                category: category,
+                price: price,
+                image: imageUrl,
+                active: true
+            };
+
+            products.unshift(newProduct);
+            saveProducts();
+            renderCatalog();
+            renderAdminTable();
+
+            // Reset Form
+            document.getElementById('add-product-form').reset();
+            document.getElementById('image-preview').classList.add('hidden');
+            document.getElementById('image-preview-placeholder').classList.remove('hidden');
+            currentBase64Image = null;
+
+            showToast('Adesivo publicado com sucesso no catálogo!');
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('admin-products-table');
+            const countSpan = document.getElementById('admin-product-count');
+
+            countSpan.innerText = products.length;
+            tbody.innerHTML = '';
+
+            products.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-100 hover:bg-slate-50/80 transition-colors";
+
+                tr.innerHTML = `
+                    <td class="p-2.5 flex items-center gap-2">
+                        <img src="${p.image}" class="w-9 h-9 rounded-lg object-cover bg-slate-100">
+                        <span class="font-bold text-slate-800 max-w-[140px] truncate" title="${p.title}">${p.title}</span>
+                    </td>
+                    <td class="p-2.5 font-semibold text-slate-600">${p.code}</td>
+                    <td class="p-2.5"><span class="bg-pink-50 text-pink-600 px-2 py-0.5 rounded-full text-[10px] font-semibold">${p.category}</span></td>
+                    <td class="p-2.5 font-bold text-slate-800">R$ ${p.price.toFixed(2).replace('.', ',')}</td>
+                    <td class="p-2.5 text-center">
+                        <button onclick="toggleProductStatus('${p.id}')" class="px-2 py-0.5 rounded-full text-[10px] font-bold ${p.active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}">
+                            ${p.active ? 'Ativo' : 'Oculto'}
+                        </button>
+                    </td>
+                    <td class="p-2.5 text-right">
+                        <button onclick="deleteProduct('${p.id}')" class="text-slate-400 hover:text-red-500 p-1.5 transition-colors">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function toggleProductStatus(id) {
+            const product = products.find(p => p.id === id);
+            if (product) {
+                product.active = !product.active;
+                saveProducts();
+                renderCatalog();
+                renderAdminTable();
+            }
+        }
+
+        function deleteProduct(id) {
+            if (confirm('Tem certeza que deseja excluir esta cartela de adesivo?')) {
+                products = products.filter(p => p.id !== id);
+                saveProducts();
+                renderCatalog();
+                renderAdminTable();
+                showToast('Adesivo removido com sucesso!');
+            }
+        }
+
+        function saveProducts() {
+            localStorage.setItem('bella_products', JSON.stringify(products));
+        }
+
+        function resetDefaultData() {
+            if (confirm('Deseja restaurar os modelos de exemplo iniciais? Isso substituirá suas fotos cadastradas.')) {
+                products = DEFAULT_PRODUCTS;
+                saveProducts();
+                renderCatalog();
+                renderAdminTable();
+                showToast('Dados restaurados para os de exemplo!');
+            }
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(products, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "catalogo_adesivos_backup.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        /* ================= UTILITÁRIOS E TOAST ================= */
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            toast.className = "bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0";
+            toast.innerHTML = `<i class="fa-solid fa-circle-check text-pink-400"></i> ${message}`;
+            
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
