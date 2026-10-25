@@ -179,15 +179,24 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Categoria *</label>
-                        <select id="product-category" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:bg-white transition-all">
-                            <option value="Florais">05 Pares</option>
-                            <option value="Rendas">03 Pares</option>
-                            <option value="Geométricos">Filha Única</option>
-                            <option value="Temáticos">Joinhas</option>
-                            <option value="Temáticos">Outros</option>
-                        </select>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Categoria *</label>
+                            <select id="product-category" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:bg-white transition-all">
+                                <option value="05 Pares">05 Pares</option>
+                                <option value="03 Pares">03 Pares</option>
+                                <option value="Filha Única">Filha Única</option>
+                                <option value="Joinhas">Joinhas</option>
+                                <option value="Outros">Outros</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Status *</label>
+                            <select id="product-status" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:bg-white transition-all">
+                                <option value="Disponível">Disponível</option>
+                                <option value="Esgotado">Esgotado</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div>
@@ -267,7 +276,7 @@
         // 1. CONFIGURAÇÕES GLOBAIS & INTEGRAÇÃO
         const API_URL = "https://script.google.com/macros/s/AKfycbxfjdkM3EGWpTQdkQALS3Ex-s6j2Cm2MZMF1PXArjPgTtM0oWvOFstUloKzo08UeDEhew/exec";
         const ADMIN_PASSWORD = "Fr@n|9489|";
-        const WHATSAPP_PHONE = "5562993258111"; // Altere para o WhatsApp real da proprietária
+        const WHATSAPP_PHONE = "5562992712483"; // WhatsApp da proprietária
 
         // ESTADOS DA APLICAÇÃO
         window.produtosDaLoja = [];
@@ -325,13 +334,41 @@
             lista.forEach(prod => {
                 const precoFormatado = parseFloat(prod.preco || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
                 
+                // Normaliza e verifica status de estoque
+                const statusTexto = (prod.status || 'Disponível').toString().trim().toLowerCase();
+                const isEsgotado = statusTexto === 'esgotado';
+
                 const card = document.createElement('div');
-                card.className = "bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between";
+                card.className = "bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between relative";
                 
+                // Estilo da imagem e badge para esgotados
+                const imgClass = isEsgotado 
+                    ? "w-full h-full object-cover filter grayscale opacity-60" 
+                    : "w-full h-full object-cover hover:scale-105 transition-transform duration-300";
+
+                const badgeEsgotado = isEsgotado ? `
+                    <div class="absolute inset-0 bg-slate-900/30 flex items-center justify-center">
+                        <span class="bg-red-600 text-white font-black px-3 py-1 rounded-lg text-xs uppercase tracking-widest shadow-lg transform -rotate-6">
+                            Esgotado
+                        </span>
+                    </div>
+                ` : '';
+
+                const botaoAcao = isEsgotado ? `
+                    <button disabled class="p-2 w-full rounded-lg bg-slate-100 text-slate-400 font-medium text-xs cursor-not-allowed flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-ban"></i> Indisponível
+                    </button>
+                ` : `
+                    <button onclick="adicionarAoCarrinho('${prod.id}')" class="p-2 rounded-lg bg-pink-50 text-pink-600 hover:bg-pink-600 hover:text-white transition-colors flex items-center justify-center">
+                        <i class="fa-solid fa-cart-plus text-xs"></i>
+                    </button>
+                `;
+
                 card.innerHTML = `
                     <div>
                         <div class="relative aspect-square bg-slate-100 overflow-hidden">
-                            <img src="${prod.imagem || PLACEHOLDER_IMG}" onerror="this.src='${PLACEHOLDER_IMG}'" alt="${prod.nome}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                            <img src="${prod.imagem || PLACEHOLDER_IMG}" onerror="this.src='${PLACEHOLDER_IMG}'" alt="${prod.nome}" class="${imgClass}">
+                            ${badgeEsgotado}
                             <span class="absolute top-2 left-2 bg-slate-900/70 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
                                 Ref: ${prod.codigo || 'N/A'}
                             </span>
@@ -346,9 +383,7 @@
                     </div>
                     <div class="p-3 pt-0 flex items-center justify-between gap-2">
                         <span class="font-extrabold text-pink-600 text-sm sm:text-base">${precoFormatado}</span>
-                        <button onclick="adicionarAoCarrinho('${prod.id}')" class="p-2 rounded-lg bg-pink-50 text-pink-600 hover:bg-pink-600 hover:text-white transition-colors flex items-center justify-center">
-                            <i class="fa-solid fa-cart-plus text-xs"></i>
-                        </button>
+                        ${botaoAcao}
                     </div>
                 `;
                 gridEl.appendChild(card);
@@ -440,6 +475,7 @@
                     preco: parseFloat(document.getElementById('product-price').value),
                     categoria: document.getElementById('product-category').value,
                     codigo: document.getElementById('product-code').value,
+                    status: document.getElementById('product-status').value,
                     imagem: base64Image
                 };
 
@@ -480,6 +516,13 @@
         function adicionarAoCarrinho(id) {
             const produto = window.produtosDaLoja.find(p => p.id == id);
             if (!produto) return;
+
+            // Previne inclusão de itens esgotados
+            const statusTexto = (produto.status || '').toString().trim().toLowerCase();
+            if (statusTexto === 'esgotado') {
+                alert("Desculpe, este produto está esgotado no momento.");
+                return;
+            }
 
             const itemExistente = carrinho.find(item => item.id == id);
             if (itemExistente) {
@@ -566,29 +609,35 @@
             const obs = document.getElementById('client-notes').value.trim();
 
             if (!nome || !endereco) {
-                alert("Por favor, preencha seu nome e endereço para o envio.");
+                alert("Por favor, preencha seu nome e endereço para entrega.");
                 return;
             }
 
-            let mensagem = `*NOVO PEDIDO - FRAN ADESIVOS*\n`;
-            mensagem += `--------------------------------\n`;
-            mensagem += `*Cliente:* ${nome}\n`;
-            mensagem += `*Endereço:* ${endereco}\n`;
-            if (obs) mensagem += `*Obs:* ${obs}\n`;
-            mensagem += `--------------------------------\n`;
-            mensagem += `*ITENS DO PEDIDO:*\n\n`;
+            if (carrinho.length === 0) {
+                alert("Seu carrinho está vazio.");
+                return;
+            }
 
-            let total = 0;
+            let textoMensagem = `*NOVO PEDIDO - FRAN ADESIVOS*\n\n`;
+            textoMensagem += `*Cliente:* ${nome}\n`;
+            textoMensagem += `*Endereço:* ${endereco}\n`;
+            if (obs) textoMensagem += `*Obs:* ${obs}\n`;
+            textoMensagem += `\n-----------------------------------\n`;
+            textoMensagem += `*ITENS DO PEDIDO:*\n\n`;
+
+            let valorTotal = 0;
             carrinho.forEach(item => {
-                const sub = parseFloat(item.preco) * item.quantidade;
-                total += sub;
-                mensagem += `• ${item.quantidade}x [Ref: ${item.codigo}] ${item.nome} - R$ ${sub.toFixed(2)}\n`;
+                const subtotal = (parseFloat(item.preco) || 0) * item.quantidade;
+                valorTotal += subtotal;
+                textoMensagem += `▪️ ${item.quantidade}x ${item.nome} (Ref: ${item.codigo})\n`;
+                textoMensagem += `   Preço un: R$ ${parseFloat(item.preco).toFixed(2)} | Subtotal: R$ ${subtotal.toFixed(2)}\n\n`;
             });
 
-            mensagem += `\n*TOTAL: R$ ${total.toFixed(2)}*`;
+            textoMensagem += `-----------------------------------\n`;
+            textoMensagem += `*VALOR TOTAL:* R$ ${valorTotal.toFixed(2)}`;
 
-            const url = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(mensagem)}`;
-            window.open(url, '_blank');
+            const urlWhatsApp = `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE}&text=${encodeURIComponent(textoMensagem)}`;
+            window.open(urlWhatsApp, '_blank');
         }
     </script>
 </body>
