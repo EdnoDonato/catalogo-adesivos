@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BellaUnha - Adesivos Artesanais</title>
+    <title>Fran Adesivos - Adesivos Artesanais Para Unhas</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -50,7 +50,7 @@
                 </div>
                 <div>
                     <h1 class="font-bold text-lg leading-tight text-slate-900 tracking-tight">BellaUnha</h1>
-                    <p class="text-xs text-pink-600 font-medium tracking-wide uppercase">Adesivos Artesanais</p>
+                    <p class="text-xs text-pink-600 font-medium tracking-wide uppercase">Adesivos Artesanais</p> <!-- VERIFICAR -->
                 </div>
             </div>
 
@@ -111,10 +111,11 @@
                 <!-- CATEGORIAS -->
                 <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 no-scrollbar" id="category-filters">
                     <button onclick="filtrarPorCategoria('Todas')" class="filter-btn active-filter px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-pink-600 text-white transition-all">Todas</button>
-                    <button onclick="filtrarPorCategoria('Florais')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">🌸 Florais</button>
-                    <button onclick="filtrarPorCategoria('Rendas')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">✨ Rendas</button>
-                    <button onclick="filtrarPorCategoria('Geométricos')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">📐 Geométricos</button>
-                    <button onclick="filtrarPorCategoria('Temáticos')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">🎉 Temáticos</button>
+                    <button onclick="filtrarPorCategoria('05 Pares')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">05 Pares</button>
+                    <button onclick="filtrarPorCategoria('03 Pares')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">03 Pares</button>
+                    <button onclick="filtrarPorCategoria('Filha Única')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">Filha Única</button>
+                    <button onclick="filtrarPorCategoria('Joinhas')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">Joinhas</button>
+                    <button onclick="filtrarPorCategoria('Outros')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">Outros</button>
                 </div>
             </div>
 
@@ -170,10 +171,11 @@
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Categoria *</label>
                         <select id="product-category" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:bg-white transition-all">
-                            <option value="Florais">Florais</option>
-                            <option value="Rendas">Rendas</option>
-                            <option value="Geométricos">Geométricos</option>
-                            <option value="Temáticos">Temáticos</option>
+                            <option value="Florais">05 Pares</option>
+                            <option value="Rendas">03 Pares</option>
+                            <option value="Geométricos">Filha Única</option>
+                            <option value="Temáticos">Joinhas</option>
+                            <option value="Temáticos">Outros</option>
                         </select>
                     </div>
 
@@ -184,7 +186,7 @@
 
                     <button type="submit" id="admin-submit-btn" class="w-full py-3 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-xl shadow-md transition-colors flex items-center justify-center gap-2">
                         <i class="fa-solid fa-cloud-arrow-up"></i>
-                        <span>Salvar e Publicar na Nuvem</span>
+                        <span>Salvar Novo Produto</span>
                     </button>
                 </form>
 
@@ -199,7 +201,7 @@
     <!-- FOOTER -->
     <footer class="bg-white border-t border-slate-200 py-6 mt-12">
         <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 space-y-1">
-            <p class="font-semibold text-slate-700">BellaUnha - Adesivos Artesanais de Unha</p>
+            <p class="font-semibold text-slate-700">Fran Adesivos Artesanais de Unha</p>
             <p>Atendimento e Vendas para Goiânia e Região</p>
         </div>
     </footer>
@@ -557,7 +559,7 @@
                 return;
             }
 
-            let mensagem = `*NOVO PEDIDO - BELLAUNHA ADESIVOS*\n`;
+            let mensagem = `*NOVO PEDIDO - FRAN ADESIVOS*\n`;
             mensagem += `--------------------------------\n`;
             mensagem += `*Cliente:* ${nome}\n`;
             mensagem += `*Endereço:* ${endereco}\n`;
